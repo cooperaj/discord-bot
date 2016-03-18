@@ -4,8 +4,8 @@ class Listener
         @closure = closure
         
     match: (message) =>
-        if message.cleanContent.match @regex
-            return true
+        if matches = message.cleanContent.match @regex
+            return matches
         
         false
     

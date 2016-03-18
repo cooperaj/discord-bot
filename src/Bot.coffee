@@ -5,6 +5,7 @@ Discord = require 'discord.js'
 HttpClient = require 'scoped-http-client'
 Crypto = require 'crypto'
 Listener = require './Listener'
+Message = require './Message'
 
 class Bot extends EventEmitter
     # Recieves messages from a Discord server and sends them off to registered listeners
@@ -58,8 +59,8 @@ class Bot extends EventEmitter
         
     _message: (message) =>
         for listener in @listeners
-            if listener.match message
-                listener.execute message
+            if matches = listener.match message
+                listener.execute new Message(@, message, matches)
         
     _loadScripts: (dir) ->
         if Fs.existsSync dir

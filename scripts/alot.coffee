@@ -8,4 +8,4 @@ images = [
 module.exports = (robot) ->
 
   robot.hear /(^|\W)alot(\z|\W|$)/i, (msg) ->
-    robot.send msg, (robot.random images)
+    msg.send (robot.random images)
