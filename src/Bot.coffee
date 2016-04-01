@@ -1,9 +1,11 @@
 {EventEmitter} = require 'events'
 Fs = require 'fs'
 Path = require 'path'
+Async = require 'async'
 Discord = require 'discord.js'
 HttpClient = require 'scoped-http-client'
 Crypto = require 'crypto'
+Brain = require './Brain'
 Listener = require './Listener'
 Message = require './Message'
 
@@ -16,19 +18,26 @@ class Bot extends EventEmitter
     constructor: (name = "Bot") ->
         @name = name
         
+        @brains = Array()        
         @listeners = Array()
         
         @client = new Discord.Client
-        @client.on "ready", @_running
-        @client.on "message", @_message       
+        @client.on "ready", @_clientRunning
+        @client.on "message", @_message      
+        
+        @on "client_ready", @_bootBrains 
+        @on "brains_ready", @_loadScripts
 
     run: () ->
+        # Load the token from a file if available to stop the login using the rate limited username/password method.
         storedToken = @_loadToken()
         if typeof storedToken is "string"
             @client.loginWithToken(storedToken)
         else
             @client.login process.env.DISCORD_EMAIL, process.env.DISCORD_PASSWORD, (error, token) =>
-                Fs.writeFileSync './token.bin', @_encryptToken(token, String(process.env.DISCORD_EMAIL + process.env.DISCORD_PASSWORD)), 'hex'
+                Fs.writeFileSync './token.bin'
+                , @_encryptToken(token, String(process.env.DISCORD_EMAIL + process.env.DISCORD_PASSWORD))
+                , 'hex'
         
     hear: (regexp, closure) =>
         @listeners.push new Listener regexp, closure  
@@ -44,7 +53,12 @@ class Bot extends EventEmitter
         
     emote: (message, response) =>
         @client.sendMessage message.channel, "*" + response + "*"
-        
+       
+    brain: (server_id) ->
+        brains = @brains.filter (brain) =>
+            brain.server_id is server_id
+        brain = brains[0] ? null
+     
     http: (url, options) ->
         HttpClient.create(url, options)
             .header('User-Agent', "Felchbot/1.0")
@@ -52,17 +66,32 @@ class Bot extends EventEmitter
     random: (items) ->
         items[ Math.floor(Math.random() * items.length) ]
         
-    _running: () =>
-        @_loadScripts Path.resolve ".", "scripts"
-        @client.setPlayingGame "with himself"
-        @emit "ready"
-        
     _message: (message) =>
         for listener in @listeners
             if matches = listener.match message
                 listener.execute new Message(@, message, matches)
+    
+    _clientRunning: () =>
+        @client.setPlayingGame "with himself"
+        @emit "client_ready"
+    
+    _bootBrains: () =>
+        brainsToBoot = []
         
-    _loadScripts: (dir) ->
+        for server in @client.servers 
+            brainsToBoot.push (callback) =>
+                brain = new Brain @, server.id
+                brain.on "ready", callback
+                brain.connect()
+                
+                @brains.push brain
+            
+        Async.parallel brainsToBoot, (err, results) =>
+            @emit "brains_ready"
+            @brains
+        
+    _loadScripts: () ->
+        dir = Path.resolve ".", "scripts"
         if Fs.existsSync dir
             for file in Fs.readdirSync(dir).sort()
                 ext  = Path.extname file
@@ -79,6 +108,7 @@ class Bot extends EventEmitter
                     console.log "Unable to load #{full}: #{error.stack}"
                     process.exit 1
                     
+        @emit "ready"
                     
     _respondPattern: (regex) ->
         re = regex.toString().split('/')
