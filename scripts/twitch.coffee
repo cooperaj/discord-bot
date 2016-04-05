@@ -1,3 +1,5 @@
+_ = require 'lodash'
+
 class TwitchWatcher 
     constructor: (robot, server_id) ->
         @server_id = server_id
@@ -51,8 +53,7 @@ class TwitchWatcher
         @robot.brain(@server_id).set 'tw_channels', @channels
         
     _getChannelsAsString: () =>
-        channelString = (channel.name for channel in @channels).toString()
-        
+        channelString = (channel.name for channel in (_.uniqBy @channels, 'name')).toString()
             
 
 module.exports = (robot) ->
