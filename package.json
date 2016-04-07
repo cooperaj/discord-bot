@@ -1,7 +1,7 @@
 {
-  "name": "felchbot-discord",
+  "name": "PieBot",
   "version": "1.0.0",
-  "description": "A bot for venturi gamings discord server",
+  "description": "A bot for discord servers",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

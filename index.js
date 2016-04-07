@@ -2,12 +2,22 @@
 
 require('dotenv').config();
 require('coffee-script/register');
-const Bot = require('./src/Bot');
+var Bot = require('./src/Bot');
 
-let instance = new Bot(process.env.BOT_NAME);
-
-instance.once('ready', () => {
-    console.log('Bot "' + process.env.BOT_NAME + '" running...');
+process.on('uncaughtException', function (err) {
+    console.error('An uncaughtException was found, the bot will shutdown.');
+    console.error(err);
+    process.exit(1);
 });
 
-instance.run();
+var bot_instance = new Bot(process.env.BOT_NAME || null);
+
+bot_instance.once('ready', function() {
+    console.log('Bot "' + bot_instance.name + '" running...');
+});
+
+bot_instance.on('error', function(error) {
+    console.error('Bot encountered an error and could not start.');
+})
+
+bot_instance.run();

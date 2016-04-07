@@ -15,7 +15,7 @@ class Bot extends EventEmitter
     # name - A String containing the name of the bot.
     #
     # Returns nothing.
-    constructor: (name = "Bot") ->
+    constructor: (name = "PieBot") ->
         @name = name
         
         @brains = Array()        
@@ -29,15 +29,8 @@ class Bot extends EventEmitter
         @on "brains_ready", @_loadScripts
 
     run: () ->
-        # Load the token from a file if available to stop the login using the rate limited username/password method.
-        storedToken = @_loadToken()
-        if typeof storedToken is "string"
-            @client.loginWithToken(storedToken)
-        else
-            @client.login process.env.DISCORD_EMAIL, process.env.DISCORD_PASSWORD, (error, token) =>
-                Fs.writeFileSync './token.bin'
-                , @_encryptToken(token, String(process.env.DISCORD_EMAIL + process.env.DISCORD_PASSWORD))
-                , 'hex'
+        @client.login process.env.DISCORD_EMAIL, process.env.DISCORD_PASSWORD, (error, token) =>
+            @emit "error", error if error
         
     hear: (regexp, closure) =>
         @listeners.push new Listener regexp, closure  
@@ -72,7 +65,7 @@ class Bot extends EventEmitter
                 listener.execute new Message(@, message, matches)
     
     _clientRunning: () =>
-        @client.setPlayingGame "with himself"
+        @client.setPlayingGame process.env.DISCORD_PLAYING if process.env.DISCORD_PLAYING
         @emit "client_ready"
     
     _bootBrains: () =>
@@ -122,22 +115,5 @@ class Bot extends EventEmitter
             "^\\s*[@]?#{name}[:,]?\\s*(?:#{pattern})",
             modifiers
         )
-        
-    _loadToken: () =>
-        try
-            et = Fs.readFileSync './token.bin', 'hex'
-            token = @_decryptToken et, String(process.env.DISCORD_EMAIL + process.env.DISCORD_PASSWORD)
-        catch e
-        token
-        
-    _encryptToken: (token, unpwd) ->
-        cipher = Crypto.createCipher 'aes-256-cbc', unpwd
-        crypted = cipher.update token, 'utf8', 'hex' 
-        crypted += cipher.final 'hex'
-	
-    _decryptToken: (token, unpwd) ->
-        decipher = Crypto.createDecipher 'aes-256-cbc', unpwd
-        dec = decipher.update token, 'hex', 'utf8'
-        dec += decipher.final 'utf8'
 
 module.exports = Bot
