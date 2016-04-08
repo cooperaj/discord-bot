@@ -1,6 +1,6 @@
 "use strict";
 
-require('dotenv').config();
+require('dotenv').config({silent: true});
 require('coffee-script/register');
 var Bot = require('./src/Bot');
 
