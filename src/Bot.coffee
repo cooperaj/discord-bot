@@ -15,7 +15,7 @@ class Bot extends EventEmitter
     # name - A String containing the name of the bot.
     #
     # Returns nothing.
-    constructor: (name = "PieBot") ->
+    constructor: (name = "Bot") ->
         @name = name
         
         @brains = Array()        
@@ -23,14 +23,20 @@ class Bot extends EventEmitter
         
         @client = new Discord.Client
         @client.on "ready", @_clientRunning
+        @client.on "error", (error) ->
+            @emit "error", error
         @client.on "message", @_message      
         
         @on "client_ready", @_bootBrains 
         @on "brains_ready", @_loadScripts
 
     run: () ->
-        @client.login process.env.DISCORD_EMAIL, process.env.DISCORD_PASSWORD, (error, token) =>
-            @emit "error", error if error
+        if process.env.DISCORD_TOKEN
+            @client.loginWithToken process.env.DISCORD_TOKEN, process.env.DISCORD_EMAIL || null, process.env.DISCORD_PASSWORD || null, (error, token) =>
+                @emit "error", error if error
+        else
+            @client.login process.env.DISCORD_EMAIL, process.env.DISCORD_PASSWORD, (error, token) =>
+                @emit "error", error if error
         
     hear: (regexp, closure) =>
         @listeners.push new Listener regexp, closure  
@@ -54,7 +60,7 @@ class Bot extends EventEmitter
      
     http: (url, options) ->
         HttpClient.create(url, options)
-            .header('User-Agent', "Felchbot/1.0")
+            .header('User-Agent', "Bot/1.0")
             
     random: (items) ->
         items[ Math.floor(Math.random() * items.length) ]
@@ -65,7 +71,9 @@ class Bot extends EventEmitter
                 listener.execute new Message(@, message, matches)
     
     _clientRunning: () =>
+        console.log @client
         @client.setPlayingGame process.env.DISCORD_PLAYING if process.env.DISCORD_PLAYING
+        @client.setUsername @name if process.env.DISCORD_EMAIL
         @emit "client_ready"
     
     _bootBrains: () =>

@@ -1,5 +1,5 @@
 {
-  "name": "PieBot",
+  "name": "Bot",
   "version": "1.0.0",
   "description": "A bot for discord servers",
   "main": "index.js",

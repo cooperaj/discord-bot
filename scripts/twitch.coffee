@@ -57,13 +57,14 @@ class TwitchWatcher
             
 
 module.exports = (robot) ->
-    tw = new TwitchWatcher robot, robot.client.servers[0].id
-    tw.run()
-    
-    robot.respond /add my twitch channel ([a-zA-Z0-9_]{3,25})/i, (msg) ->
-        tw.addChannel msg.message.channel.id, msg.message.author.id, msg.match[1]
-        msg.reply "I added your channel - #{msg.match[1]}"
+    if robot.client.servers[0]
+        tw = new TwitchWatcher robot, robot.client.servers[0].id
+        tw.run()
         
-    robot.respond /remove my twitch channel/i, (msg) ->
-        tw.removeChannel msg.message.channel.id, msg.message.author.id
-        msg.reply "I removed your channel"
+        robot.respond /add my twitch channel ([a-zA-Z0-9_]{3,25})/i, (msg) ->
+            tw.addChannel msg.message.channel.id, msg.message.author.id, msg.match[1]
+            msg.reply "I added your channel - #{msg.match[1]}"
+            
+        robot.respond /remove my twitch channel/i, (msg) ->
+            tw.removeChannel msg.message.channel.id, msg.message.author.id
+            msg.reply "I removed your channel"
