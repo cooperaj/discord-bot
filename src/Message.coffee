@@ -5,13 +5,13 @@ class Message
         @match = match
         @response = ""
         
-    reply: (message) ->
-        @bot.reply @message, message
+    reply: (response) ->
+        @bot.reply @message, response
         
-    send: (message) ->
-        @bot.send @message, message
+    send: (response) ->
+        @bot.send @message, response
         
-    emote: (message) ->
-        @bot.emote @message, message
+    emote: (response) ->
+        @bot.emote @message, response
     
 module.exports = Message

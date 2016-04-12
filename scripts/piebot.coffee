@@ -13,5 +13,5 @@ module.exports = (bot) ->
         msg.send "http://i.imgur.com/BbgL7x3.gif"
         
     bot.respond /set playing (.*)/i, (msg) ->
-        bot.client.setPlayingGame msg.match[1]
+        bot.client.User.setGame { name: msg.match[1] } 
         msg.reply "I am now playing #{msg.match[1]}"

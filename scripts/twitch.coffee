@@ -12,9 +12,13 @@ class TwitchWatcher
         
     fetchStreams: () =>
         query = @_getChannelsAsString()
-        
-        @robot.http "https://api.twitch.tv/kraken/streams?channel=#{query}"
+
+        @robot.http "https://api.twitch.tv/kraken/streams?channel=#{query}", { rejectUnauthorized: false }
             .get() (err, res, body) =>
+                if err
+                    console.log "twitch.coffee: " + err
+                    return
+                
                 @channels = @channels.map (channel) =>
                     for stream in JSON.parse(body).streams
                         if channel.name is stream.channel.name # channel is online according to twitch
@@ -33,7 +37,7 @@ class TwitchWatcher
         setTimeout @fetchStreams, 60 * 1000
 
     notifyStreamStart: (channel_id, user_id, url) =>
-        @robot.client.sendMessage channel_id, "<@#{user_id}> has started streaming: #{url}"
+        @robot.client.Channels.get(channel_id).sendMessage "<@#{user_id}> has started streaming: #{url}"
         
     addChannel: (channel_id, user_id, name) =>
         @removeChannel channel_id, user_id
@@ -57,8 +61,8 @@ class TwitchWatcher
             
 
 module.exports = (robot) ->
-    if robot.client.servers[0]
-        tw = new TwitchWatcher robot, robot.client.servers[0].id
+    if robot.client.Guilds.toArray()[0]
+        tw = new TwitchWatcher robot, robot.client.Guilds.toArray()[0].id
         tw.run()
         
         robot.respond /add my twitch channel ([a-zA-Z0-9_]{3,25})/i, (msg) ->

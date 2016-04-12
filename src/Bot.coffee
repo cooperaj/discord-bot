@@ -2,7 +2,7 @@
 Fs = require 'fs'
 Path = require 'path'
 Async = require 'async'
-Discord = require 'discord.js'
+Discordie = require 'discordie'
 HttpClient = require 'scoped-http-client'
 Crypto = require 'crypto'
 Brain = require './Brain'
@@ -21,22 +21,21 @@ class Bot extends EventEmitter
         @brains = Array()        
         @listeners = Array()
         
-        @client = new Discord.Client
-        @client.on "ready", @_clientRunning
-        @client.on "error", (error) ->
-            @emit "error", error
-        @client.on "message", @_message      
+        @client = new Discordie
+        @client.Dispatcher.on "GATEWAY_READY", @_clientRunning
+        @client.Dispatcher.on "MESSAGE_CREATE", @_message      
         
         @on "client_ready", @_bootBrains 
         @on "brains_ready", @_loadScripts
 
     run: () ->
         if process.env.DISCORD_TOKEN
-            @client.loginWithToken process.env.DISCORD_TOKEN, process.env.DISCORD_EMAIL || null, process.env.DISCORD_PASSWORD || null, (error, token) =>
-                @emit "error", error if error
+            @client.connect { token: process.env.DISCORD_TOKEN }
         else
-            @client.login process.env.DISCORD_EMAIL, process.env.DISCORD_PASSWORD, (error, token) =>
-                @emit "error", error if error
+            @client.connect { 
+                email: process.env.DISCORD_EMAIL, 
+                password: process.env.DISCORD_PASSWORD
+            }
         
     hear: (regexp, closure) =>
         @listeners.push new Listener regexp, closure  
@@ -45,13 +44,13 @@ class Bot extends EventEmitter
         @hear (@_respondPattern regexp), closure
         
     reply: (message, response) =>
-        @client.reply message, response
+        message.reply response
         
     send: (message, response) =>
-        @client.sendMessage message.channel, response
+        message.channel.sendMessage response
         
     emote: (message, response) =>
-        @client.sendMessage message.channel, "*" + response + "*"
+        message.channel.sendMessage "*" + response + "*"
        
     brain: (server_id) ->
         brains = @brains.filter (brain) =>
@@ -65,23 +64,23 @@ class Bot extends EventEmitter
     random: (items) ->
         items[ Math.floor(Math.random() * items.length) ]
         
-    _message: (message) =>
+    _message: (e) =>
         for listener in @listeners
-            if matches = listener.match message
-                listener.execute new Message(@, message, matches)
+            if matches = listener.match e.message.content
+                listener.execute new Message(@, e.message, matches)
     
     _clientRunning: () =>
-        console.log @client
-        @client.setPlayingGame process.env.DISCORD_PLAYING if process.env.DISCORD_PLAYING
-        @client.setUsername @name if process.env.DISCORD_EMAIL
+        @client.User.setGame { name: process.env.DISCORD_PLAYING } if process.env.DISCORD_PLAYING
+        @client.User.edit null, @name if process.env.DISCORD_EMAIL
+        @client.User.edit null, null, Fs.readFileSync(process.env.BOT_AVATAR) if process.env.BOT_AVATAR
         @emit "client_ready"
     
     _bootBrains: () =>
         brainsToBoot = []
         
-        for server in @client.servers 
+        @client.Guilds.forEach (guild) =>
             brainsToBoot.push (callback) =>
-                brain = new Brain @, server.id
+                brain = new Brain @, guild.id
                 brain.on "ready", callback
                 brain.connect()
                 
