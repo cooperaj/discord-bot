@@ -68,25 +68,32 @@ class Bot extends EventEmitter
         mp3 = Fs.createReadStream mp3Path
         mp3.pipe mp3decoder
         
-        mp3decoder.on 'format', (pcmfmt) =>
+        mp3decoder.on 'format', (pcmfmt) ->
             options = {
-                frameDuration: 60
+                frameDuration: 60,
                 sampleRate: pcmfmt.sampleRate,
                 channels: pcmfmt.channels,
+                float: false
             }
             
-            channel.join().then (info, err) =>
-                return if !info
+            channel.join().then (info, err) ->
+                return if !info            
                             
                 encoderStream = info.voiceConnection.getEncoderStream options
                 return if !encoderStream
 
-                encoderStream.once "unpipe", () => 
+                encoderStream.once 'unpipe', () -> 
                     mp3.destroy() # close descriptor
 
                 mp3decoder.pipe encoderStream
-                mp3decoder.once 'end', () =>
-                    channel.leave()
+                mp3decoder.once 'end', () ->
+                    setTimeout () -> 
+                        channel.leave()
+                    , 1000
+                    
+            .catch (err) ->
+                console.log "Bot: Error whilst playing mp3: #{err}"
+                channel.leave()
        
     brain: (server_id) ->
         brains = @brains.filter (brain) ->
