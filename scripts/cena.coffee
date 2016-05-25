@@ -1,10 +1,10 @@
 cenas = 
-    "jc_airhorn": 250,
-    "jc_echo": 250,
-    "jc_full": 250,
-    "jc_jc": 250,
-    "jc_nameis": 250,
-    "jc_spam": 250
+    "jc_airhorn.mp3": 250,
+    "jc_echo.mp3": 250,
+    "jc_full.mp3": 250,
+    "jc_jc.mp3": 250,
+    "jc_nameis.mp3": 250,
+    "jc_spam.mp3": 250
 
 module.exports = (robot) ->
 
