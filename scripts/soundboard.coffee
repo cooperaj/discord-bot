@@ -20,7 +20,23 @@ sounds =
         "jc_full.mp3": 250,
         "jc_jc.mp3": 250,
         "jc_nameis.mp3": 250,
-        "jc_spam.mp3": 250
+        "jc_spam.mp3": 250   
+    "2sad4me":
+        "2sad4me.mp3": 1
+    "2sed4airhorn":
+        "2sed4airhorn.mp3": 1
+    "Get Noscoped":
+        "get_noscoped.mp3": 1
+    "OooooooohMyGooood":
+        "oooooooohmygooood.mp3": 1
+    "Shots Fired":
+        "shots_fired.mp3": 1
+    "Skrillex Scary":
+        "skrillex_scary.mp3": 1
+    "Spooky":
+        "spooky.mp3": 1
+    "Tactical Nuke":
+        "tactical_nuke.mp3": 1
     "Wombo Combo": 
         "wombo_combo.mp3": 1
 
