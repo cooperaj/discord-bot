@@ -5,7 +5,9 @@ Lame = require 'lame'
 Path = require 'path'
 Async = require 'async'
 Crypto = require 'crypto'
+Express = require 'express'
 Discordie = require 'discordie'
+BodyParser = require 'body-parser'
 HttpClient = require 'scoped-http-client'
 Brain = require './Brain'
 Listener = require './Listener'
@@ -131,13 +133,16 @@ class Bot extends EventEmitter
             if matches = listener.match e.message.content
                 listener.execute new Message(@, e.message, matches)
     
-    _clientRunning: () =>
+    _clientRunning: =>
         @client.User.setGame { name: process.env.DISCORD_PLAYING } if process.env.DISCORD_PLAYING
         @client.User.edit null, @name if process.env.DISCORD_EMAIL
         @client.User.edit null, null, Fs.readFileSync(process.env.BOT_AVATAR) if process.env.BOT_AVATAR
+        
+        @_setupExpress()
+        
         @emit "client_ready"
     
-    _bootBrains: () =>
+    _bootBrains: =>
         brainsToBoot = []
         
         @client.Guilds.forEach (guild) =>
@@ -152,7 +157,7 @@ class Bot extends EventEmitter
             @emit "brains_ready"
             @brains
         
-    _loadScripts: () ->
+    _loadScripts: ->
         dir = Path.resolve ".", "scripts"
         if Fs.existsSync dir
             for file in Fs.readdirSync(dir).sort()
@@ -184,5 +189,30 @@ class Bot extends EventEmitter
             "^\\s*[@]?#{name}[:,]?\\s*(?:#{pattern})",
             modifiers
         )
+    
+    # Setup the Express server's defaults.
+    #
+    _setupExpress: ->
+        user    = process.env.EXPRESS_USER
+        pass    = process.env.EXPRESS_PASSWORD
+        port    = process.env.EXPRESS_PORT or process.env.PORT or 8080
+        address = process.env.EXPRESS_BIND_ADDRESS or process.env.BIND_ADDRESS or '0.0.0.0'
+
+        app = Express()
+
+        app.use (req, res, next) =>
+            res.setHeader "X-Powered-By", "discord-bot/#{@name}"
+            next()
+
+        app.use Express.basicAuth user, pass if user and pass
+        app.use Express.query()
+
+        app.use BodyParser.json()
+        app.use BodyParser.urlencoded()
+
+        @server = app.listen(port, address)
+        @router = app
+        
+        console.log "Express: Listening on #{address}:#{port}"
 
 module.exports = Bot
