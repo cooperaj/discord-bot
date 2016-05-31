@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        
+        <title>MLG Soundboard</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.24/vue.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <style>
+            body {
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+            
+            #buttons { 
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .btn {
+                margin: 0.4em;
+                border-radius: 0;
+                flex-grow: 1;
+            }
+            
+            #logindialog .btn {
+                margin-left: 0;
+            }
+            
+            .navbar-default {
+                border-radius: 0;
+                background-color: transparent;
+                background: url('data:image/jpeg;base64,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') no-repeat right top;
+                background-size: contain;
+                padding-right: 6rem;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div id="app" class="container">
+            
+            <nav id="topbar" class="navbar navbar-default">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/soundboard">MLG Soundboard</a>
+                </div>
+            </nav>
+            
+            <div id="logindialog" class="row" v-if="!user">
+                <div class="col-sm-8 col-sm-offset-2">
+                    <p>To access the soundboard you will need to login using your Discord credentials. Don't worry, we let Discord
+                        do all the work and so won't see them.</p>
+                    <a href="/auth" class="btn btn-default" role="button">Login</a>
+                </div>
+            </div>
+
+            <div id="buttons">
+                <template v-for="sound in sounds">
+                    <button name="sound"
+                        class="btn btn-default"
+                        :id="$key"
+                        :value="$key"
+                        v-on:click="playSound($key)">{{{ $key }}}</button>
+                </template>
+            </div>
+
+        </div><!-- /.container -->
+  
+        <script type="text/javascript">
+            var vm = new Vue({
+                el: '#app',
+                
+                data: {
+                    sounds: null,
+                    user: null
+                },
+                
+                created: function() {
+                    var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sb-user\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                    if (cookieValue) {
+                        this.user = JSON.parse(decodeURIComponent(cookieValue));
+                        this.fetchData();
+                    }
+                },
+                
+                methods: {
+                    fetchData: function () {
+                        var xhr = new XMLHttpRequest()
+                        var self = this
+                        xhr.open('GET', '/soundboard/api/sounds')
+                        xhr.onload = function () {
+                            self.sounds = JSON.parse(xhr.responseText)
+                        }
+                        xhr.send()
+                    },
+                    playSound: function(identifier) {
+                        var xhr = new XMLHttpRequest()
+                        var self = this
+                        xhr.open('GET', '/soundboard/api/sounds/' + encodeURIComponent(identifier) + '/' + this.user.user_id)
+                        xhr.onload = function () {
+                            
+                        }
+                        xhr.send()
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>

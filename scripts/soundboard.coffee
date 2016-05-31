@@ -1,3 +1,5 @@
+Express = require 'express'
+
 sounds =
     "Random Airhorn": 
         "airhorn_default.mp3": 1000,
@@ -42,10 +44,12 @@ sounds =
 
 module.exports = (robot) ->
 
-    robot.router.get '/soundboard', (req, res) ->
+    robot.router.use '/soundboard', Express.static __dirname + '/soundboard'
+
+    robot.router.get '/soundboard/api/sounds', (req, res) ->
         res.send JSON.stringify sounds
         
-    robot.router.get '/soundboard/:id/:sound', (req, res) ->
+    robot.router.get '/soundboard/api/sounds/:sound/:id', (req, res) ->
         user = robot.client.Users.get req.params.id
         sound = sounds[req.params.sound]
 
