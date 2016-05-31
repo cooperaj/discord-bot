@@ -23,7 +23,7 @@ class Bot extends EventEmitter
         @brains = Array()        
         @listeners = Array()
         
-        @client = new Discordie
+        @client = new Discordie { autoReconnect: true }
         @client.Dispatcher.on "GATEWAY_READY", @_clientRunning
         @client.Dispatcher.on "MESSAGE_CREATE", @_message      
         
