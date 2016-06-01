@@ -77,14 +77,20 @@
                 },
                 
                 created: function() {
-                    var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sb-user\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                    var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sb-user\s*\=\s*([^;]*).*$)|^.*$/, "$1")
                     if (cookieValue) {
-                        this.user = JSON.parse(decodeURIComponent(cookieValue));
-                        this.fetchData();
+                        this.user = JSON.parse(decodeURIComponent(cookieValue))
+                        this.setAvatar(this.user.user_id, this.user.user_avatar)
+                        this.fetchData()
                     }
                 },
                 
                 methods: {
+                    setAvatar: function(user_id, user_avatar) {
+                        bar = document.getElementById('topbar')
+                        bar.style.backgroundImage = "url('https://cdn.discordapp.com/avatars/" 
+                            + user_id + "/" + user_avatar + ".jpg')"
+                    },
                     fetchData: function () {
                         var xhr = new XMLHttpRequest()
                         var self = this
