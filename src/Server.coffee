@@ -8,14 +8,14 @@ HttpClient = require 'scoped-http-client'
 
 class Server extends EventEmitter
     
-    constructor: ->
+    constructor: (name)->
         @port    = process.env.SERVER_PORT or 8080
         @address = process.env.SERVER_BIND_ADDRESS or '0.0.0.0'
 
         @app = Express()
 
         @app.use (req, res, next) =>
-            res.setHeader "X-Powered-By", "discord-bot/#{@name}"
+            res.setHeader "X-Powered-By", "discord-bot/#{name}"
             next()
             
         @app.use Express.query()
