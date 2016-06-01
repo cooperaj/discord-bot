@@ -174,7 +174,6 @@ class Bot extends EventEmitter
 
                 catch error
                     console.log "Unable to load #{full}: #{error.stack}"
-                    process.exit 1
                     
         @emit "ready"
                     
