@@ -13,6 +13,8 @@ class Server extends EventEmitter
         @address = process.env.SERVER_BIND_ADDRESS or '0.0.0.0'
 
         @app = Express()
+        
+        @app.set('trust proxy', 'loopback') if process.env.NODE_ENV is 'production'
 
         @app.use (req, res, next) =>
             res.setHeader "X-Powered-By", "discord-bot/#{name}"
@@ -47,6 +49,9 @@ class Server extends EventEmitter
         
     # Sets up the required endpoints for oauth authorisation against the discord service.    
     _setupAuth: ->
+        callback_port = if process.env.NODE_ENV is 'production' then '' else ':' + @port
+        callback_protocol = if process.env.NODE_ENV is 'production' then 'https' else 'http'
+    
         oauth2 = require('simple-oauth2') (
             clientID: process.env.AUTH_CLIENT_ID
             clientSecret: process.env.AUTH_CLIENT_SECRET
@@ -56,9 +61,13 @@ class Server extends EventEmitter
          
         # Initial page redirecting to Github
         @app.get '/auth', (req, res) =>
+            if not req.secure and process.env.NODE_ENV is 'production'
+                req.session.returnTo = req.header 'Referer' 
+                res.redirect "#{callback_protocol}://#{req.hostname}#{callback_port}/auth"
+        
             # Authorization uri definition
             authorization_uri = oauth2.authCode.authorizeURL {
-                redirect_uri: "http://#{req.hostname}:#{@port}/auth/callback"
+                redirect_uri: "#{callback_protocol}://#{req.hostname}#{callback_port}/auth/callback"
                 scope: 'identify' }
                 
             req.session.returnTo = req.header 'Referer' 
@@ -87,12 +96,12 @@ class Server extends EventEmitter
 
             oauth2.authCode.getToken {
                 code: code
-                redirect_uri: "http://#{req.hostname}:#{@port}/auth/callback"
+                redirect_uri: "#{callback_protocol}://#{req.hostname}#{callback_port}/auth/callback"
             }, saveToken
             
     _fetchUserInfo: (token, fn) ->
         HttpClient.create('https://discordapp.com/api/users/@me')
-            .header('User-Agent', 'Bot (https://github.com/cooperaj/discord-bot, 1.0)')
+            .header('User-Agent', "#{@name} (https://github.com/cooperaj/discord-bot, 1.0)")
             .header('Authorization', "Bearer #{token.token.access_token}")
             .get() fn
         
