@@ -41,6 +41,13 @@ sounds =
         "tactical_nuke.mp3": 1
     "Wombo Combo": 
         "wombo_combo.mp3": 1
+    "Random Quake":
+        "quake_dominating.mp3":250,
+        "quake_headshot.mp3":250,
+        "quake_humiliation.mp3":250,
+        "quake_multikill.mp3":250,
+        "quake_rampage.mp3":250,
+        "quake_unstoppable.mp3":250
 
 module.exports = (robot) ->
 
