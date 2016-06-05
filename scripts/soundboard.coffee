@@ -22,7 +22,14 @@ sounds =
         "jc_full.mp3": 250,
         "jc_jc.mp3": 250,
         "jc_nameis.mp3": 250,
-        "jc_spam.mp3": 250   
+        "jc_spam.mp3": 250
+    "Random Quake":
+        "quake_dominating.mp3":250,
+        "quake_headshot.mp3":250,
+        "quake_humiliation.mp3":250,
+        "quake_multikill.mp3":250,
+        "quake_rampage.mp3":250,
+        "quake_unstoppable.mp3":250
     "2sad4me":
         "2sad4me.mp3": 1
     "2sed4airhorn":
@@ -41,13 +48,17 @@ sounds =
         "tactical_nuke.mp3": 1
     "Wombo Combo": 
         "wombo_combo.mp3": 1
-    "Random Quake":
-        "quake_dominating.mp3":250,
-        "quake_headshot.mp3":250,
-        "quake_humiliation.mp3":250,
-        "quake_multikill.mp3":250,
-        "quake_rampage.mp3":250,
-        "quake_unstoppable.mp3":250
+    "Headshot":
+        "quake_headshot.mp3":1
+    "Humiliation":
+        "quake_humiliation.mp3":1
+    "Multi Kill":
+        "quake_multikill.mp3":1
+    "Rampage":
+        "quake_rampage.mp3":1,
+    "Unstoppable":
+        "quake_unstoppable.mp3":1
+
 
 module.exports = (robot) ->
 
