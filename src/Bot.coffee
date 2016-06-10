@@ -138,7 +138,7 @@ class Bot extends EventEmitter
         @client.User.edit null, null, Fs.readFileSync(process.env.BOT_AVATAR) if process.env.BOT_AVATAR
         
         # Start the express server
-        @server = new Server
+        @server = new Server @name
         @router = @server.router
         
         @emit "client_ready"
