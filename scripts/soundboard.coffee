@@ -1,7 +1,7 @@
 Express = require 'express'
 
 sounds =
-    "Random Airhorn": 
+    "Random Airhorn":
         "airhorn_default.mp3": 1000,
         "airhorn_reverb.mp3": 800,
         "airhorn_spam.mp3": 800,
@@ -46,7 +46,7 @@ sounds =
         "spooky.mp3": 1
     "Tactical Nuke":
         "tactical_nuke.mp3": 1
-    "Wombo Combo": 
+    "Wombo Combo":
         "wombo_combo.mp3": 1
     "Headshot":
         "quake_headshot.mp3":1
@@ -58,6 +58,8 @@ sounds =
         "quake_rampage.mp3":1,
     "Unstoppable":
         "quake_unstoppable.mp3":1
+    "What is love?":
+        "what_is_love.mp3": 1
 
 
 module.exports = (robot) ->
@@ -66,23 +68,23 @@ module.exports = (robot) ->
 
     robot.router.get '/soundboard/api/sounds', (req, res) ->
         res.send JSON.stringify sounds
-        
+
     robot.router.get '/soundboard/api/sounds/:sound/:id', (req, res) ->
         user = robot.client.Users.get req.params.id
         sound = sounds[req.params.sound]
 
         if not sound
             res.status(404).send "sound not found"
-            return 
-        
+            return
+
         member = null
         robot.client.Guilds.forEach (guild) =>
-            
+
             if member = user.memberOf(guild)
-                if channel = member.getVoiceChannel()      
+                if channel = member.getVoiceChannel()
                     robot.play channel, "audio/" + robot.random sound
                     res.send "ok"
                     return
-                    
+
         if not res.headersSent
             res.status(404).send "user not found"
