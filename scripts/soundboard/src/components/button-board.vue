@@ -33,7 +33,9 @@ export default {
     watch: {
         'user': {
             handler: function(value, oldValue) {
-                this.fetchData();
+                if (value != null) {
+                    this.fetchData();
+                }
             },
             immediate: true
         }
