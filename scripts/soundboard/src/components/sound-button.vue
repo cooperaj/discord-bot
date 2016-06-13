@@ -18,8 +18,7 @@ export default {
     methods: {
         playSound: function(identifier) {
             var xhr = new XMLHttpRequest()
-            var self = this
-            xhr.open('GET', '/soundboard/api/sounds/' + encodeURIComponent(identifier) + '/' + user.user_id)
+            xhr.open('GET', '/soundboard/api/sounds/' + encodeURIComponent(identifier) + '/' + this.user.user_id)
             xhr.onload = function () {
                 // don't do anything just yet
             }
