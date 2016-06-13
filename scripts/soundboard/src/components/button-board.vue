@@ -31,8 +31,11 @@ export default {
     },
 
     watch: {
-        'user': function(value, oldValue) {
-            this.fetchData();
+        'user': {
+            handler: function(value, oldValue) {
+                this.fetchData();
+            },
+            immediate: true
         }
     },
 
