@@ -2,32 +2,16 @@
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        
+
         <title>MLG Soundboard</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.24/vue.min.js"></script>
+
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
         <style>
             body {
                 padding-top: 20px;
                 padding-bottom: 20px;
             }
-            
-            #buttons { 
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-            
-            .btn {
-                margin: 0.4em;
-                border-radius: 0;
-                flex-grow: 1;
-            }
-            
-            #logindialog .btn {
-                margin-left: 0;
-            }
-            
+
             .navbar-default {
                 border-radius: 0;
                 background-color: transparent;
@@ -36,81 +20,23 @@
                 padding-right: 6rem;
             }
         </style>
+
+        <script type="text/javascript" src="dist/build.js"></script>
     </head>
     <body>
 
         <div id="app" class="container">
-            
+
             <nav id="topbar" class="navbar navbar-default">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="/soundboard">MLG Soundboard</a>
                 </div>
             </nav>
-            
-            <div id="logindialog" class="row" v-if="!user">
-                <div class="col-sm-8 col-sm-offset-2">
-                    <p>To access the soundboard you will need to login using your Discord credentials. Don't worry, we let Discord
-                        do all the work and so won't see your precious.</p>
-                    <a href="/auth" class="btn btn-default" role="button">Login</a>
-                </div>
-            </div>
 
-            <div id="buttons">
-                <template v-for="sound in sounds">
-                    <button name="sound"
-                        class="btn btn-default"
-                        :id="$key"
-                        :value="$key"
-                        v-on:click="playSound($key)">{{{ $key }}}</button>
-                </template>
-            </div>
+            <authentication></authentication>
+
+            <button-board></button-board>
 
         </div><!-- /.container -->
-  
-        <script type="text/javascript">
-            var vm = new Vue({
-                el: '#app',
-                
-                data: {
-                    sounds: null,
-                    user: null
-                },
-                
-                created: function() {
-                    var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sb-user\s*\=\s*([^;]*).*$)|^.*$/, "$1")
-                    if (cookieValue) {
-                        this.user = JSON.parse(decodeURIComponent(cookieValue))
-                        this.setAvatar(this.user.user_id, this.user.user_avatar)
-                        this.fetchData()
-                    }
-                },
-                
-                methods: {
-                    setAvatar: function(user_id, user_avatar) {
-                        bar = document.getElementById('topbar')
-                        bar.style.backgroundImage = "url('https://cdn.discordapp.com/avatars/" 
-                            + user_id + "/" + user_avatar + ".jpg')"
-                    },
-                    fetchData: function () {
-                        var xhr = new XMLHttpRequest()
-                        var self = this
-                        xhr.open('GET', '/soundboard/api/sounds')
-                        xhr.onload = function () {
-                            self.sounds = JSON.parse(xhr.responseText)
-                        }
-                        xhr.send()
-                    },
-                    playSound: function(identifier) {
-                        var xhr = new XMLHttpRequest()
-                        var self = this
-                        xhr.open('GET', '/soundboard/api/sounds/' + encodeURIComponent(identifier) + '/' + this.user.user_id)
-                        xhr.onload = function () {
-                            
-                        }
-                        xhr.send()
-                    }
-                }
-            })
-        </script>
     </body>
 </html>
