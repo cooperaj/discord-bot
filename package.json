@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "postinstall": "cd scripts/soundboard/src && node ../../../node_modules/webpack/bin/webpack.js"
+    "build": "cd scripts/soundboard/src && node ../../../node_modules/webpack/bin/webpack.js"
   },
   "author": "Adam Cooper <adam@networkpie.co.uk>",
   "license": "MIT",
