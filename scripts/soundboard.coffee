@@ -60,6 +60,8 @@ sounds =
         "quake_unstoppable.mp3": 1
     "What is love?":
         "what_is_love.mp3": 1
+    "Bye, have a great time":
+        "bye_have_a_great_time": 1
 
 
 module.exports = (robot) ->
