@@ -47,7 +47,7 @@ sounds =
     "Spooky":
         "spooky.mp3": 1
     "Surprise Motherfucker":
-        "Surprise_Motherfucker.mp3"
+        "Surprise_Motherfucker.mp3": 1
     "Tactical Nuke":
         "tactical_nuke.mp3": 1
     "Wombo Combo":
@@ -66,6 +66,8 @@ sounds =
         "what_is_love.mp3": 1
     "Bye, have a great time":
         "bye_have_a_great_time": 1
+    "It was at this moment...":
+        "it_was_at_this_moment.mp3": 1
 
 
 module.exports = (robot) ->
