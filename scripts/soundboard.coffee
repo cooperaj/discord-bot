@@ -35,7 +35,7 @@ sounds =
     "2sed4airhorn":
         "2sed4airhorn.mp3": 1
     "Bye, have a great time":
-        "bye_have_a_great_time": 1
+        "bye_have_a_great_time.mp3": 1
     "Get Noscoped":
         "get_noscoped.mp3": 1
     "Headshot":
