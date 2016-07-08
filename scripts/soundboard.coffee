@@ -24,22 +24,34 @@ sounds =
         "jc_nameis.mp3": 250,
         "jc_spam.mp3": 250
     "Random Quake":
-        "quake_dominating.mp3":250,
-        "quake_headshot.mp3":250,
-        "quake_humiliation.mp3":250,
-        "quake_multikill.mp3":250,
-        "quake_rampage.mp3":250,
-        "quake_unstoppable.mp3":250
+        "quake_dominating.mp3": 250,
+        "quake_headshot.mp3": 250,
+        "quake_humiliation.mp3": 250,
+        "quake_multikill.mp3": 250,
+        "quake_rampage.mp3": 250,
+        "quake_unstoppable.mp3": 250
     "2sad4me":
         "2sad4me.mp3": 1
     "2sed4airhorn":
         "2sed4airhorn.mp3": 1
+    "Bye, have a great time":
+        "bye_have_a_great_time": 1
     "Get Noscoped":
         "get_noscoped.mp3": 1
+    "Headshot":
+        "quake_headshot.mp3": 1
+    "Humiliation":
+        "quake_humiliation.mp3": 1
+    "It was at this moment...":
+        "it_was_at_this_moment.mp3": 1
     "OooooooohMyGooood":
         "oooooooohmygooood.mp3": 1
     "Oh baby a triple":
         "Oh_baby_a_triple.mp3": 1
+    "Multi Kill":
+        "quake_multikill.mp3": 1
+    "Rampage":
+        "quake_rampage.mp3": 1,
     "Shots Fired":
         "shots_fired.mp3": 1
     "Skrillex Scary":
@@ -47,23 +59,15 @@ sounds =
     "Spooky":
         "spooky.mp3": 1
     "Surprise Motherfucker":
-        "Surprise_Motherfucker.mp3"
+        "Surprise_Motherfucker.mp3": 1
     "Tactical Nuke":
         "tactical_nuke.mp3": 1
-    "Wombo Combo":
-        "wombo_combo.mp3": 1
-    "Headshot":
-        "quake_headshot.mp3":1
-    "Humiliation":
-        "quake_humiliation.mp3":1
-    "Multi Kill":
-        "quake_multikill.mp3":1
-    "Rampage":
-        "quake_rampage.mp3":1,
     "Unstoppable":
-        "quake_unstoppable.mp3":1
+        "quake_unstoppable.mp3": 1
     "What is love?":
         "what_is_love.mp3": 1
+    "Wombo Combo":
+        "wombo_combo.mp3": 1
 
 
 module.exports = (robot) ->
