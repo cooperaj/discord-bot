@@ -1,11 +1,11 @@
 {
   "name": "Bot",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "A bot for discord servers",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "postinstall": "cd scripts/soundboard/src && node ../../../node_modules/webpack/bin/webpack.js"
+    "build": "cd scripts/soundboard/src && node ../../../node_modules/webpack/bin/webpack.js"
   },
   "author": "Adam Cooper <adam@networkpie.co.uk>",
   "license": "MIT",
@@ -19,11 +19,11 @@
     "coffee-script": "^1.10.0",
     "connect-redis": "^3.0.2",
     "crypto": "0.0.3",
-    "discordie": "^0.5.0",
+    "discordie": "^0.7.0",
     "dotenv": "^2.0.0",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
-    "lame": "^1.2.3",
+    "lame": "^1.2.4",
     "lodash": "^4.8.2",
     "redis": "^2.6.0-0",
     "scoped-http-client": "^0.11.0",
