@@ -38,12 +38,16 @@ sounds =
         "get_noscoped.mp3": 1
     "OooooooohMyGooood":
         "oooooooohmygooood.mp3": 1
+    "Oh baby a triple":
+        "Oh_baby_a_triple.mp3": 1
     "Shots Fired":
         "shots_fired.mp3": 1
     "Skrillex Scary":
         "skrillex_scary.mp3": 1
     "Spooky":
         "spooky.mp3": 1
+    "Surprise Motherfucker":
+        "Surprise_Motherfucker.mp3"
     "Tactical Nuke":
         "tactical_nuke.mp3": 1
     "Wombo Combo":
