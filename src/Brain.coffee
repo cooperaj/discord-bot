@@ -6,20 +6,20 @@ class Brain extends EventEmitter
     # Represents somewhat persistent storage for the robot. Extend this.
     #
     # Returns a new Brain with no external storage.
-    constructor: (robot, server_id) ->  
-        @robot = robot 
+    constructor: (robot, server_id) ->
+        @robot = robot
         @server_id = server_id
         @redis_url = if process.env.REDIS_URL?
             process.env.REDIS_URL
         else
             'redis://localhost:6379'
-        
+
         @data =
             users:    { }
             _private: { server_id: server_id }
 
         @autoSave = false
-                
+
         # start up the timed saving of data
         @resetSaveInterval 5
 
@@ -27,27 +27,27 @@ class Brain extends EventEmitter
     connect: () ->
         info    = Url.parse @redis_url, true
         @client = if info.auth?
-                Redis.createClient(info.port, info.hostname, {no_ready_check: true}) 
-            else 
+                Redis.createClient(info.port, info.hostname, {no_ready_check: true})
+            else
                 Redis.createClient(info.port, info.hostname)
         @prefix = info.path?.replace('/', '') or @server_id
-        
+
         @client.on "error", (err) ->
             if /ECONNREFUSED/.test err.message
             else
                 console.log err.stack
-        
+
         @client.on "connect", =>
             console.log "Brain: Successfully connected to Redis"
             @getData() if not info.auth
-            
+
         if info.auth
             @client.auth info.auth.split(":")[1], (err) =>
-            if err
-                console.log "Brain: Failed to authenticate to Redis"
-            else
-                console.log "Brain: Successfully authenticated to Redis"
-                @getData()
+                if err
+                    console.log "Brain: Failed to authenticate to Redis"
+                else
+                    console.log "Brain: Successfully authenticated to Redis"
+                    @getData()
 
 
     getData: () ->
@@ -123,7 +123,7 @@ class Brain extends EventEmitter
     # Returns nothing.
     resetSaveInterval: (seconds) ->
         clearInterval @saveInterval if @saveInterval
-            
+
         @saveInterval = setInterval =>
             @save() if @autoSave
         , seconds * 1000

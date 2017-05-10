@@ -1,12 +1,6 @@
 version: '2'
 
 services:
-    data_storage:
-        image: busybox
-        volumes:
-            - ./.data:/data
-        command: echo "Data volume container"
-
     node:
         env_file: .docker.env
         build: .
@@ -19,6 +13,9 @@ services:
         image: redis:alpine
         ports:
             - "6379:6379"
-        volumes_from:
-            - data_storage
+        volumes:
+            - data_storage:/data
         command: redis-server --appendonly yes
+
+volumes:
+    data_storage:
