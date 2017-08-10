@@ -18,57 +18,57 @@ class Bot extends EventEmitter
     # @param name A String containing the name of the bot.
     constructor: (name = "Bot") ->
         @name = name
-        
-        @brains = Array()        
+
+        @brains = Array()
         @listeners = Array()
-        
+
         @client = new Discordie { autoReconnect: true }
         @client.Dispatcher.on "GATEWAY_READY", @_clientRunning
-        @client.Dispatcher.on "MESSAGE_CREATE", @_message   
-        
-        @on "client_ready", @_bootBrains 
+        @client.Dispatcher.on "MESSAGE_CREATE", @_message
+
+        @on "client_ready", @_bootBrains
         @on "brains_ready", @_loadScripts
-        
+
     run: () ->
         if process.env.DISCORD_TOKEN
             @client.connect { token: process.env.DISCORD_TOKEN }
         else
-            @client.connect { 
-                email: process.env.DISCORD_EMAIL, 
+            @client.connect {
+                email: process.env.DISCORD_EMAIL,
                 password: process.env.DISCORD_PASSWORD
             }
-            
+
     # Lets a script register a listener that responds when it spots text in
     # amongst the message contents.
     #
     # @param regexp The regular expression to match the message contents on
-    # @param closure The code to execute when a match is made 
+    # @param closure The code to execute when a match is made
     hear: (regexp, closure) =>
-        @listeners.push new Listener regexp, closure  
-        
+        @listeners.push new Listener regexp, closure
+
     respond: (regexp, closure) =>
         @hear (@_respondPattern regexp), closure
-        
+
     reply: (message, response) =>
         message.reply response
-        
+
     send: (message, response) =>
         message.channel.sendMessage response
-        
+
     emote: (message, response) =>
         message.channel.sendMessage "*" + response + "*"
-        
+
     # Plays an MP3 encoded file to the channel specified.
     #
     # @param channel The audio channel to which you want the file played
     # @param mp3Path The path to the mp3 file that you want to play
     play: (channel, mp3Path) ->
         return if channel.type is not 'voice'
-    
+
         mp3decoder = new Lame.Decoder
         mp3 = Fs.createReadStream mp3Path
         mp3.pipe mp3decoder
-        
+
         mp3decoder.on 'format', (pcmfmt) ->
             options = {
                 frameDuration: 60,
@@ -76,88 +76,89 @@ class Bot extends EventEmitter
                 channels: pcmfmt.channels,
                 float: false
             }
-            
+
             channel.join().then (info, err) ->
-                return if !info            
-                            
+                return if !info
+
                 encoderStream = info.voiceConnection.getEncoderStream options
                 return if !encoderStream
 
-                encoderStream.once 'unpipe', () -> 
+                encoderStream.once 'unpipe', () ->
                     mp3.destroy() # close descriptor
 
                 mp3decoder.pipe encoderStream
                 mp3decoder.once 'end', () ->
-                    setTimeout () -> 
+                    setTimeout () ->
                         channel.leave()
                     , 1000
-                    
+
             .catch (err) ->
                 console.log "Bot: Error whilst playing mp3: #{err}"
                 channel.leave()
-       
+
     brain: (server_id) ->
         brains = @brains.filter (brain) ->
             brain.server_id is server_id
         brain = brains[0] ? null
-     
+
     http: (url, options) ->
         HttpClient.create(url, options)
             .header('User-Agent', "Bot/1.0")
-            
+
     random: (items) ->
         if _.isArray items
             items[ Math.floor(Math.random() * items.length) ]
         else
             @_weightedRandom items
-           
+
     _weightedRandom: (items) ->
         sum = 0
-        collection = _.keys(items).reduce (previous, current) -> 
+        collection = _.keys(items).reduce (previous, current) ->
             sum += items[current]
             previous.push { value: current, weight: sum }
             previous
         , []
-        
+
         sortedCollection = _.orderBy collection, 'weight'
         randomValue = Math.floor Math.random() * sum
-        
+
         i = 0
         while i < sortedCollection.length
             return sortedCollection[i].value if randomValue < sortedCollection[i].weight
             i++
-        
+
     _message: (e) =>
         for listener in @listeners
             if matches = listener.match e.message.content
                 listener.execute new Message(@, e.message, matches)
-    
+
     _clientRunning: =>
         @client.User.setGame { name: process.env.DISCORD_PLAYING } if process.env.DISCORD_PLAYING
         @client.User.edit null, @name if process.env.DISCORD_EMAIL
         @client.User.edit null, null, Fs.readFileSync(process.env.BOT_AVATAR) if process.env.BOT_AVATAR
-        
+
         # Start the express server
-        @server = new Server @name
-        @router = @server.router
-        
+        if @server is undefined
+            @server = new Server @name
+            @router = @server.router
+
         @emit "client_ready"
-    
+
     _bootBrains: =>
         brainsToBoot = []
-        
+
         @client.Guilds.forEach (guild) =>
             brainsToBoot.push (callback) =>
                 brain = new Brain @, guild.id
                 brain.on "ready", callback
                 brain.connect()
-                
+
                 @brains.push brain
-            
+
         Async.parallel brainsToBoot, (err, results) =>
             @emit "brains_ready"
             @brains
-        
+
     _loadScripts: ->
         dir = Path.resolve ".", "scripts"
         if Fs.existsSync dir
@@ -174,9 +175,9 @@ class Bot extends EventEmitter
 
                 catch error
                     console.log "Unable to load #{full}: #{error.stack}"
-                    
+
         @emit "ready"
-                    
+
     _respondPattern: (regex) ->
         re = regex.toString().split('/')
         re.shift()
