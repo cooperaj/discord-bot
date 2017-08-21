@@ -6,7 +6,7 @@ var Bot = require('./src/Bot');
 
 process.on('uncaughtException', function (err) {
     console.error('An uncaughtException was found, the bot will shutdown.');
-    console.error(err);
+    console.error(err.stack);
     process.exit(1);
 });
 
